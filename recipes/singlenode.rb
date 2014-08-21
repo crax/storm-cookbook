@@ -1,6 +1,6 @@
 include_recipe "storm"
 
-user_path = node[:storm][:path][:user]
+user_path = node[:storm][:path][:root]
 storm_path = node[:storm][:path][:storm]
 
 template "Storm conf file" do
@@ -38,19 +38,19 @@ end
 
   conf_file = "storm-#{service_name}.conf"
   conf_path = "/etc/init/#{conf_file}"
-  template "Upstart #{conf_file}" do 
+  template "Upstart #{conf_file}" do
     path conf_path
     source "upstart/#{conf_file}.erb"
     owner node[:storm][:deploy][:user]
     group node[:storm][:deploy][:group]
-    mode 0644    
+    mode 0644
   end
 
   service "storm-#{service_name}" do
     provider Chef::Provider::Service::Upstart
     supports :status => true, :restart => true, :reload => true
     action [ :enable, :start ]
-  end  
+  end
 end
 
 

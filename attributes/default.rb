@@ -11,7 +11,7 @@ default[:storm][:deploy][:user] = "storm"
 default[:storm][:deploy][:group] = "storm"
 
 default[:storm][:nimbus][:host] = "localhost"
-default[:storm][:supervisor][:hosts] = [ "localhost" ]
+default[:storm][:supervisor][:hosts] = %w{ localhost }
 
 default[:storm][:nimbus][:childopts] = "-Xmx512m -Djava.net.preferIPv4Stack=true"
 
@@ -33,3 +33,6 @@ default[:storm][:remote_file] = "apache-storm-#{node[:storm][:version]}.zip"
 
 default[:storm][:path][:version] = ::File.join(node[:storm][:path][:root],
                                                "apache-storm-#{node[:storm][:version]}")
+default[:storm][:path][:stormdata] = ::File.join(node[:storm][:path][:root],
+                                               "storm-data")
+default[:storm][:path][:java_lib] = "/usr/local/lib:/usr/lib"

@@ -27,6 +27,11 @@ end
 template "/etc/default/storm-drpc" do
   source "env/storm-drpc.erb"
   mode "0664"
+  variables(
+    :zoo_servers => node[:storm][:supervisor][:hosts],
+    :stormdata => node[:storm][:path][:stormdata],
+    :java_lib_path => node[:storm][:path][:java_lib]
+  )
 end
 
 service "storm-drpc" do

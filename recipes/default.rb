@@ -22,8 +22,14 @@ node[:storm][:packages].each do |pkg|
   end
 end
 
-directory node[:storm][:path][:root] do
-  recursive true
+dirs = []
+dirs << node[:storm][:path][:root]
+dirs << node[:storm][:path][:stormdata]
+
+dirs.each do |dir|
+  directory dir do
+    recursive true
+  end
 end
 
 local_file = ::File.join(Chef::Config[:file_cache_path],
@@ -48,4 +54,9 @@ end
 template "/etc/default/storm" do
   source "env/storm.erb"
   mode "0664"
+  variables(
+    :user => node[:storm][:deploy][:user],
+    :storm_home => ::File.join(node[:storm][:path][:root], "current"),
+    :java_lib_path => node[:storm][:path][:java_lib]
+  )
 end

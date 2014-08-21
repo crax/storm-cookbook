@@ -2,9 +2,10 @@
 
 ########### These MUST be filled in for a storm configuration
 storm.zookeeper.servers:
-<% node[:storm][:supervisor][:hosts].each do |host| %>
+<% puts @zoo_servers %>
+<% @zoo_servers.each do |host| %>
 - "<%= host %>"
 <% end %>
 
-storm.local.dir: "<%= node[:storm][:path][:storm] %>/storm-data"
-java.library.path: "/usr/local/lib"
+storm.local.dir: "<%= @stormdata %>"
+java.library.path: "<%= @java_lib_path %>"

@@ -1,0 +1,10 @@
+# This file is managed by Chef any changes made will be overwritten
+
+JAVA_LIBRARY_PATH="/usr/local/lib:/usr/lib"
+STORM_USER="storm"
+STORM_HOME="/etc/storm/current"
+STORM_LIB="$STORM_HOME/lib"
+STORM_JAR="$STORM_HOME/storm-*.jar"
+STORM_CONF="/etc/storm/current/conf"
+STORM_CLASSPATH="$(echo $STORM_LIB/*.jar | tr ' ' ':'):$(echo $STORM_JAR | tr ' ' ':'):$(echo $STORM_CONF | tr ' ' ':'):${STORM_HOME}"
+STORM_OPTIONS=""

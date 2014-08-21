@@ -1,20 +1,36 @@
-include_recipe "storm"
+#
+# Cookbook Name:: storm-project
+# Recipe:: default
+#
+# Copyright 2012, YOUR_COMPANY_NAME
+#
+# All rights reserved - Do Not Redistribute
+#
 
-template "Storm conf file" do
-  path "/home/#{node[:storm][:deploy][:user]}/apache-storm-#{node[:storm][:version]}/conf/storm.yaml"
+template "/etc/init/storm-drpc.conf" do
+  source "upstart/storm-drpc.conf.erb"
+  owner node[:storm][:deploy][:user]
+  group node[:storm][:deploy][:group]
+  mode "0644"
+  notifies :restart, "service[storm-drpc]"
+end
+
+template "storm_conf" do
+  path ::File.join(node[:storm][:path][:version], "conf/storm.yaml")
   source "drpc.yaml.erb"
   owner node[:storm][:deploy][:user]
   group node[:storm][:deploy][:group]
-  mode 0644
+  mode "0644"
+  notifies :restart, "service[storm-drpc]"
 end
 
-bash "Start drpc" do
-  user node[:storm][:deploy][:user]
-  cwd "/home/#{node[:storm][:deploy][:user]}"
-  code <<-EOH
-  pid=$(pgrep -f backtype.storm.daemon.drpc)
-  if [ -z $pid ]; then
-    nohup apache-storm-#{node[:storm][:version]}/bin/storm drpc >>drpc.log 2>&1 &
-  fi
-  EOH
+template "/etc/default/storm-drpc" do
+  source "env/storm-drpc.erb"
+  mode "0664"
+end
+
+service "storm-drpc" do
+  provider Chef::Provider::Service::Upstart
+  supports :status => true, :restart => true, :reload => true
+  action [ :enable, :start ]
 end

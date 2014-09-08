@@ -1,20 +1,43 @@
-include_recipe "storm"
+#
+# Cookbook Name:: storm-project
+# Recipe:: default
+#
+# Copyright 2012, YOUR_COMPANY_NAME
+#
+# All rights reserved - Do Not Redistribute
+#
 
-template "Storm conf file" do
-  path "/home/#{node[:storm][:deploy][:user]}/apache-storm-#{node[:storm][:version]}/conf/storm.yaml"
+template "/etc/init/storm-drpc.conf" do
+  source "upstart/storm-drpc.conf.erb"
+  owner node[:storm][:deploy][:user]
+  group node[:storm][:deploy][:group]
+  mode "0644"
+  variables(
+    :user => node[:storm][:deploy][:user],
+    :storm_home => ::File.join(node[:storm][:path][:root], "current"),
+    :java_lib_path => node[:storm][:path][:java_lib],
+    :drpc_pid => node[:storm][:path][:pid],
+    :drpc_mem => node[:storm][:drpc][:mem],
+  )
+  notifies :restart, "service[storm-drpc]"
+end
+
+template "storm_conf" do
+  path ::File.join(node[:storm][:path][:version], "conf/storm.yaml")
   source "drpc.yaml.erb"
   owner node[:storm][:deploy][:user]
   group node[:storm][:deploy][:group]
-  mode 0644
+  mode "0644"
+  variables(
+    :zoo_servers => node[:storm][:supervisor][:hosts],
+    :stormdata => node[:storm][:path][:stormdata],
+    :java_lib_path => node[:storm][:path][:java_lib]
+  )
+  notifies :restart, "service[storm-drpc]"
 end
 
-bash "Start drpc" do
-  user node[:storm][:deploy][:user]
-  cwd "/home/#{node[:storm][:deploy][:user]}"
-  code <<-EOH
-  pid=$(pgrep -f backtype.storm.daemon.drpc)
-  if [ -z $pid ]; then
-    nohup apache-storm-#{node[:storm][:version]}/bin/storm drpc >>drpc.log 2>&1 &
-  fi
-  EOH
+service "storm-drpc" do
+  provider Chef::Provider::Service::Upstart
+  supports :status => true, :restart => true, :reload => true
+  action [ :enable, :start ]
 end

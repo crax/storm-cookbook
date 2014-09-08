@@ -2,7 +2,6 @@
 
 ########### These MUST be filled in for a storm configuration
 storm.zookeeper.servers:
-<% puts @zoo_servers %>
 <% @zoo_servers.each do |host| %>
 - "<%= host %>"
 <% end %>

@@ -12,6 +12,13 @@ template "/etc/init/storm-drpc.conf" do
   owner node[:storm][:deploy][:user]
   group node[:storm][:deploy][:group]
   mode "0644"
+  variables(
+    :user => node[:storm][:deploy][:user],
+    :storm_home => ::File.join(node[:storm][:path][:root], "current"),
+    :java_lib_path => node[:storm][:path][:java_lib],
+    :drpc_pid => node[:storm][:path][:pid],
+    :drpc_mem => node[:storm][:drpc][:mem],
+  )
   notifies :restart, "service[storm-drpc]"
 end
 
@@ -21,17 +28,12 @@ template "storm_conf" do
   owner node[:storm][:deploy][:user]
   group node[:storm][:deploy][:group]
   mode "0644"
-  notifies :restart, "service[storm-drpc]"
-end
-
-template "/etc/default/storm-drpc" do
-  source "env/storm-drpc.erb"
-  mode "0664"
   variables(
     :zoo_servers => node[:storm][:supervisor][:hosts],
     :stormdata => node[:storm][:path][:stormdata],
     :java_lib_path => node[:storm][:path][:java_lib]
   )
+  notifies :restart, "service[storm-drpc]"
 end
 
 service "storm-drpc" do

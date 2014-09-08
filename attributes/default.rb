@@ -36,3 +36,8 @@ default[:storm][:path][:version] = ::File.join(node[:storm][:path][:root],
 default[:storm][:path][:stormdata] = ::File.join(node[:storm][:path][:root],
                                                "storm-data")
 default[:storm][:path][:java_lib] = "/usr/local/lib:/usr/lib"
+default[:storm][:path][:pid] = "/var/run/storm-drpc.pid"
+
+default[:storm][:drpc] = {
+  :mem => "768m"
+}

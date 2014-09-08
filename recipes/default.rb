@@ -50,13 +50,3 @@ end
 link ::File.join(node[:storm][:path][:root], "current") do
   to node[:storm][:path][:version]
 end
-
-template "/etc/default/storm" do
-  source "env/storm.erb"
-  mode "0664"
-  variables(
-    :user => node[:storm][:deploy][:user],
-    :storm_home => ::File.join(node[:storm][:path][:root], "current"),
-    :java_lib_path => node[:storm][:path][:java_lib]
-  )
-end

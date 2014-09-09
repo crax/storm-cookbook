@@ -1,7 +1,12 @@
+#
+# Cookbook Name:: storm
+# Recipe:: singlenode
+#
+
 include_recipe "storm"
 
 user_path = node[:storm][:path][:root]
-storm_path = node[:storm][:path][:storm]
+storm_path = ::File.join(node[:storm][:path][:root], "current")
 
 template "Storm conf file" do
   path "#{storm_path}/conf/storm.yaml"
@@ -9,6 +14,15 @@ template "Storm conf file" do
   owner node[:storm][:deploy][:user]
   group node[:storm][:deploy][:group]
   mode 0644
+  variables(
+    :user => node[:storm][:deploy][:user],
+    :storm_home => ::File.join(node[:storm][:path][:root], "current"),
+    :zoo_servers => node[:storm][:supervisor][:hosts],
+    :stormdata => node[:storm][:path][:stormdata],
+    :java_lib_path => node[:storm][:path][:java_lib],
+    :drpc_pid => node[:storm][:path][:pid],
+    :drpc_mem => node[:storm][:drpc][:mem],
+  )
 end
 
 file "#{storm_path}/lib/netty-3.6.3.Final.jar" do
@@ -22,28 +36,22 @@ remote_file "#{storm_path}/lib/netty-3.9.2.Final.jar" do
 end
 
 ['nimbus', 'supervisor', 'drpc', 'ui'].each do |service_name|
-  package = "backtype.storm.daemon.#{service_name}"
-  package = 'backtype.storm.ui.core' if service_name == 'ui'
-
-  # bash "Start #{service_name}" do
-  #   user node[:storm][:deploy][:user]
-  #   cwd storm_path
-  #   code <<-EOH
-  #   pid=$(pgrep -f #{package})
-  #   if [ -z $pid ]; then
-  #     ./bin/storm #{service_name} &
-  #   fi
-  #   EOH
-  # end
-
   conf_file = "storm-#{service_name}.conf"
   conf_path = "/etc/init/#{conf_file}"
+
   template "Upstart #{conf_file}" do
     path conf_path
     source "upstart/#{conf_file}.erb"
     owner node[:storm][:deploy][:user]
     group node[:storm][:deploy][:group]
     mode 0644
+    variables(
+      :user => node[:storm][:deploy][:user],
+      :storm_home => ::File.join(node[:storm][:path][:root], "current"),
+      :java_lib_path => node[:storm][:path][:java_lib],
+      :drpc_pid => node[:storm][:path][:pid],
+      :drpc_mem => node[:storm][:drpc][:mem],
+    )
   end
 
   service "storm-#{service_name}" do
@@ -52,15 +60,3 @@ end
     action [ :enable, :start ]
   end
 end
-
-
-
-
-
-
-
-
-
-
-
-

@@ -21,7 +21,7 @@ default[:storm][:worker][:childopts] = "-Xmx512m -Djava.net.preferIPv4Stack=true
 
 default[:storm][:ui][:childopts] = "-Xmx512m -Djava.net.preferIPv4Stack=true"
 
-default[:storm][:version] = "0.9.1-incubating"
+default[:storm][:version] = "0.9.2-incubating"
 default[:storm][:packages] = %w{ curl unzip build-essential pkg-config libtool autoconf git-core uuid-dev python-dev zookeeper }
 default[:storm][:path][:root] = "/etc/storm"
 

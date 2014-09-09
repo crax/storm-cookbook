@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: storm-project
+# Cookbook Name:: storm
 # Recipe:: default
 #
 # Copyright 2012, YOUR_COMPANY_NAME

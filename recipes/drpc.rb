@@ -1,10 +1,6 @@
 #
-# Cookbook Name:: storm-project
-# Recipe:: default
-#
-# Copyright 2012, YOUR_COMPANY_NAME
-#
-# All rights reserved - Do Not Redistribute
+# Cookbook Name:: storm
+# Recipe:: drpc
 #
 
 template "/etc/init/storm-drpc.conf" do

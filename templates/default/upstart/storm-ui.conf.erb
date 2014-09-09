@@ -3,12 +3,6 @@
 author "Nicholas Verbeck <nerdynick@gmail.com>"
 description "Starts up an instance of Storm's Web UI"
 
-# Where is storm installed at
-env INSTALL_DIR=/opt/storm
-
-# Where is the storm cache dir configured
-env LOCAL_CACHE=$INSTALL_DIR/storm-local
-
 # What user and group to run as
 setuid root
 setgid root
@@ -20,5 +14,6 @@ respawn
 respawn limit 2 5
 
 script
-	python $INSTALL_DIR/bin/storm ui
+<%= render "env/storm.erb", :variables => { :user => @user, :storm_home => @storm_home, :java_lib_path => @java_lib_path } %>
+    python $STORM_HOME/bin/storm ui
 end script

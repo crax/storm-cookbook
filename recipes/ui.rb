@@ -1,3 +1,8 @@
+#
+# Cookbook Name:: storm
+# Recipe:: ui
+#
+
 include_recipe "storm"
 
 template "Storm conf file" do

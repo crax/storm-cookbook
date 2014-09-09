@@ -3,12 +3,6 @@
 author "Nicholas Verbeck <nerdynick@gmail.com>"
 description "Starts up an instance of Storm's Nimbus Server"
 
-# Where is storm installed at
-env INSTALL_DIR=/opt/storm
-
-# Where is the storm cache dir configured
-env LOCAL_CACHE=$INSTALL_DIR/storm-local
-
 # What user and group to run as
 setuid root
 setgid root
@@ -20,10 +14,13 @@ respawn
 respawn limit 2 5
 
 pre-start script
-	# Clean up old local files. This prevents a problem with corrupt files.
-	rm -Rf $LOCAL_CACHE/nimbus/*
+<%= render "env/storm.erb", :variables => { :user => @user, :storm_home => @storm_home, :java_lib_path => @java_lib_path } %>
+    # Clean up old local files. This prevents a problem with corrupt files.
+    rm -Rf $STORM_HOME/storm-local/nimbus/*
 end script
 
 script
-	python $INSTALL_DIR/bin/storm nimbus
+<%= render "env/storm.erb", :variables => { :user => @user, :storm_home => @storm_home, :java_lib_path => @java_lib_path } %>
+    # General storm parameters
+    python $STORM_HOME/bin/storm nimbus
 end script

@@ -47,3 +47,9 @@ Otherwise the node can be configured to perform on of the services.
 * Recipe: `storm::supervisor`
 * Recipe: `storm::ui`
 * Recipe: `storm::drpc`
+
+## Storm UI
+
+The storm ui is available via port 8080.  If using local virtualization,
+port forward to the host's 8080 port to see the storm ui that will display
+summaries of the cluster, topologies, supervisors, and nimbus.

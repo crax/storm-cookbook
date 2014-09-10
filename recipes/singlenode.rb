@@ -9,7 +9,7 @@ user_path = node[:storm][:path][:root]
 storm_home = ::File.join(node[:storm][:path][:root], node[:storm][:long_version])
 
 template "Storm conf file" do
-  path "#{storm_path}/conf/storm.yaml"
+  path "#{storm_home}/conf/storm.yaml"
   source "singlenode.yaml.erb"
   owner node[:storm][:deploy][:user]
   group node[:storm][:deploy][:group]

@@ -3,6 +3,8 @@
 # Recipe:: drpc
 #
 
+include_recipe "storm::default"
+
 template "/etc/init/storm-drpc.conf" do
   source "upstart/storm-drpc.conf.erb"
   owner node[:storm][:deploy][:user]
@@ -10,7 +12,7 @@ template "/etc/init/storm-drpc.conf" do
   mode "0644"
   variables(
     :user => node[:storm][:deploy][:user],
-    :storm_home => ::File.join(node[:storm][:path][:root], "current"),
+    :storm_home => ::File.join(node[:storm][:path][:root], node[:storm][:long_version]),
     :java_lib_path => node[:storm][:path][:java_lib],
     :drpc_pid => node[:storm][:path][:pid],
     :drpc_mem => node[:storm][:drpc][:mem],

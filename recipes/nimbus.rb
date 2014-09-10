@@ -3,7 +3,7 @@
 # Recipe:: nimbus
 #
 
-include_recipe "storm"
+include_recipe "storm::default"
 
 template "Storm conf file" do
   path "/home/#{node[:storm][:deploy][:user]}/apache-storm-#{node[:storm][:version]}/conf/storm.yaml"
@@ -31,7 +31,7 @@ template "/etc/init/storm-nimbus.conf" do
   mode "0644"
   variables(
     :user => node[:storm][:deploy][:user],
-    :storm_home => ::File.join(node[:storm][:path][:root], "current"),
+    :storm_home => ::File.join(node[:storm][:path][:root], node[:storm][:long_version]),
     :java_lib_path => node[:storm][:path][:java_lib],
   )
   notifies :restart, "service[storm-nimbus]"

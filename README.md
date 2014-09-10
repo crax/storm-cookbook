@@ -1,85 +1,49 @@
 # Storm Chef Cookbook
 
-This cookbook has been forked from [hmalphettes/storm-project-cookbook](https://github.com/hmalphettes/storm-project-cookbook) and a first pass of modifications have been made to support any Storm version
-(0.9.1-incubating by default), added recipe for a single node cluster deployment, a recipe for a UI node
-and added/cleaned some options. I am using this cookbook with Chef Solo and Vagrant.
-Lots of modifications are still required to put this cookbook in better shape.
+This cookbook was originally based off of the fork from [yury-egorenkov/storm-cookbook](https://github.com/yury-egorenkov/storm-cookbook)
 
-This cookbook will install the following:
-- Zookeeper, current Ubuntu package
-- Storm 0.9.1-incubating by default but configurable
+Initial focus is for convergence of a single node
 
-# Requirement
+## Requirements
 
-- Ubuntu Linux
-- Java 1.7 need to be installed. I suggest this [Java cookbook](git://github.com/opscode-cookbooks/java.git)
+Zookeeper is expected to be installed.  It's recommended to use the community
+cookbook by [bbaugher/apache_zookeeper](https://github.com/bbaugher/apache_zookeeper)
+as it is being actively maintained.
 
-# Recipes
+## Services
 
-- storm::singlenode
-- storm::nimbus
-- storm::supervisor
-- storm::ui
-- storm::drpc
+Upstart scripts are configured for each of the services installed, and by
+default will be started.  Their state can be changed manually with the
+`sudo [start,stop,restart] storm-[service]` commands.
 
-The `storm::singlenode` recipe installs nimbus, supervisor, drpc and ui on the same node.
+## Recipes
 
-# Default options
+The recipes should be called in two parts.  First the installation, and second
+the configuration.
 
-```
-default[:storm][:version] = "0.9.1-incubating"
+**Installation**
 
-default[:storm][:deploy][:user] = ::File.exists?("/home/vagrant") ? "vagrant" : "ubuntu"
-default[:storm][:deploy][:group] = ::File.exists?("/home/vagrant") ? "vagrant" : "ubuntu"
+Recipe: `storm::default`
 
-default[:storm][:nimbus][:host] = "192.168.42.10"
-default[:storm][:supervisor][:hosts] = [ "192.168.42.20" ]
+Storm will have two install methods `"package"` and `"source"`.  Currently,
+`"source"` installations are not converging, so let's stick with `"package"`.
+Installation can be specified by setting the following attributes:
 
-default[:storm][:nimbus][:childopts] = "-Xmx512m -Djava.net.preferIPv4Stack=true"
-
-default[:storm][:supervisor][:childopts] = "-Xmx512m -Djava.net.preferIPv4Stack=true"
-default[:storm][:supervisor][:workerports] = (6700..6706).to_a
-default[:storm][:worker][:childopts] = "-Xmx512m -Djava.net.preferIPv4Stack=true"
-
-default[:storm][:ui][:childopts] = "-Xmx512m -Djava.net.preferIPv4Stack=true"
+```ruby
+default[:storm][:install_method] = "package"
+default[:storm][:short_version] = "0.9.2-incubating"
 ```
 
-# Example Vagranfile
+**Configuration**
 
-Complete [Vagrantfile](https://github.com/colinsurprenant/redstorm/blob/v0.6.5/vagrant/Vagrantfile)
+The node can be configured in one of two configurations.  First as a
+full-stack where the nimbus, supervisor, ui, and drpc services are all installed.
 
-```
-chef.add_recipe "java"
-chef.add_recipe "storm::singlenode"
+* Recipe: `storm::singlenode`
 
-chef.json = {
-  :java => {
-    :oracle => {
-      "accept_oracle_download_terms" => true
-    },
-    :install_flavor => "openjdk",
-    :jdk_version => "7",
-  },
+Otherwise the node can be configured to perform on of the services.
 
-  :storm => {
-    :deploy => {
-      :user => "storm",
-      :group => "storm",
-    },
-    :nimbus => {
-      :host => "localhost",
-      :childopts => "-Xmx128m",
-    },
-    :supervisor => {
-      :hosts =>  ["localhost"],
-      :childopts => "-Xmx128m",
-    },
-    :worker => {
-      :childopts => "-Xmx128m",
-    },
-    :ui => {
-      :childopts => "-Xmx128m",
-    },
-  },
-}
-```
+* Recipe: `storm::nimbus`
+* Recipe: `storm::supervisor`
+* Recipe: `storm::ui`
+* Recipe: `storm::drpc`

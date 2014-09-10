@@ -1,16 +1,17 @@
 name             "storm"
-maintainer       "Colin Surprenant"
-maintainer_email "colin.surprenant@gmail.com"
+maintainer       "Dan Couture"
+maintainer_email "MathYourLife@gmail.com"
 license          "MIT License"
-description      "installs and configures Twitter Storm"
-long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          "0.2.2"
+description      "Installs and configures Apache Storm"
+long_description IO.read(File.join(File.dirname(__FILE__), "README.md"))
+version          IO.read(File.join(File.dirname(__FILE__), "VERSION")) rescue "0.1.0"
 
 %w{
-    debian
-    ubuntu
+  debian
+  ubuntu
 }.each do |os|
   supports os
 end
 
-depends 'zookeeper'
+depends "git"
+depends "maven"

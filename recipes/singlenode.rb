@@ -3,10 +3,10 @@
 # Recipe:: singlenode
 #
 
-include_recipe "storm"
+include_recipe "storm::default"
 
 user_path = node[:storm][:path][:root]
-storm_path = ::File.join(node[:storm][:path][:root], "current")
+storm_home = ::File.join(node[:storm][:path][:root], node[:storm][:long_version])
 
 template "Storm conf file" do
   path "#{storm_path}/conf/storm.yaml"
@@ -16,7 +16,7 @@ template "Storm conf file" do
   mode 0644
   variables(
     :user => node[:storm][:deploy][:user],
-    :storm_home => ::File.join(node[:storm][:path][:root], "current"),
+    :storm_home => storm_home,
     :zoo_servers => node[:storm][:supervisor][:hosts],
     :stormdata => node[:storm][:path][:stormdata],
     :java_lib_path => node[:storm][:path][:java_lib],
@@ -25,17 +25,7 @@ template "Storm conf file" do
   )
 end
 
-file "#{storm_path}/lib/netty-3.6.3.Final.jar" do
-  action :delete
-end
-
-# Update netty to 3.9.2
-remote_file "#{storm_path}/lib/netty-3.9.2.Final.jar" do
-  source "http://central.maven.org/maven2/io/netty/netty/3.9.2.Final/netty-3.9.2.Final.jar"
-  action :create_if_missing
-end
-
-['nimbus', 'supervisor', 'drpc', 'ui'].each do |service_name|
+["nimbus", "supervisor", "drpc", "ui"].each do |service_name|
   conf_file = "storm-#{service_name}.conf"
   conf_path = "/etc/init/#{conf_file}"
 
@@ -47,11 +37,12 @@ end
     mode 0644
     variables(
       :user => node[:storm][:deploy][:user],
-      :storm_home => ::File.join(node[:storm][:path][:root], "current"),
+      :storm_home => storm_home,
       :java_lib_path => node[:storm][:path][:java_lib],
       :drpc_pid => node[:storm][:path][:pid],
       :drpc_mem => node[:storm][:drpc][:mem],
     )
+    notifies :restart, "service[storm-#{service_name}]"
   end
 
   service "storm-#{service_name}" do

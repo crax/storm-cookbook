@@ -3,7 +3,7 @@
 # Recipe:: ui
 #
 
-include_recipe "storm"
+include_recipe "storm::default"
 
 template "Storm conf file" do
   path "/home/#{node[:storm][:deploy][:user]}/apache-storm-#{node[:storm][:version]}/conf/storm.yaml"

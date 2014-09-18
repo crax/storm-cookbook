@@ -12,7 +12,7 @@ as it is being actively maintained.
 
 ## Services
 
-Upstart scripts are configured for each of the services installed, and by
+SysV and Upstart scripts are configured for each of the services installed, and by
 default will be started.  Their state can be changed manually with the
 `sudo [start,stop,restart] storm-[service]` commands.
 

@@ -5,21 +5,6 @@
 
 include_recipe "storm::default"
 
-template "/etc/init/storm-drpc.conf" do
-  source "upstart/storm-drpc.conf.erb"
-  owner node[:storm][:deploy][:user]
-  group node[:storm][:deploy][:group]
-  mode "0644"
-  variables(
-    :user => node[:storm][:deploy][:user],
-    :storm_home => ::File.join(node[:storm][:path][:root], node[:storm][:long_version]),
-    :java_lib_path => node[:storm][:path][:java_lib],
-    :drpc_pid => node[:storm][:path][:pid],
-    :drpc_mem => node[:storm][:drpc][:mem],
-  )
-  notifies :restart, "service[storm-drpc]"
-end
-
 template "storm_conf" do
   path ::File.join(node[:storm][:path][:version], "conf/storm.yaml")
   source "drpc.yaml.erb"
@@ -34,8 +19,4 @@ template "storm_conf" do
   notifies :restart, "service[storm-drpc]"
 end
 
-service "storm-drpc" do
-  provider Chef::Provider::Service::Upstart
-  supports :status => true, :restart => true, :reload => true
-  action [ :enable, :start ]
-end
+include_recipe "storm::service_drpc"

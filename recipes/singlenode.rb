@@ -5,23 +5,16 @@
 
 include_recipe "storm::default"
 
-storm_home = node[:storm][:path][:version]
-
-template "Storm conf file" do
-  path "#{storm_home}/conf/storm.yaml"
+template "storm.yaml" do
+  path ::File.join(node[:storm][:path][:version], "conf/storm.yaml")
   source "singlenode.yaml.erb"
   owner node[:storm][:deploy][:user]
   group node[:storm][:deploy][:group]
   mode 0644
-  variables(
-    :user => node[:storm][:deploy][:user],
-    :storm_home => storm_home,
-    :zoo_servers => node[:storm][:supervisor][:hosts],
-    :stormdata => node[:storm][:path][:stormdata],
-    :java_lib_path => node[:storm][:path][:java_lib],
-    :drpc_pid => node[:storm][:path][:pid],
-    :drpc_mem => node[:storm][:drpc][:mem],
-  )
+  notifies :restart, "service[storm-drpc]"
+  notifies :restart, "service[storm-nimbus]"
+  notifies :restart, "service[storm-supervisor]"
+  notifies :restart, "service[storm-ui]"
 end
 
 ["nimbus", "supervisor", "drpc", "ui"].each do |service_name|

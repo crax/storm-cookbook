@@ -1,27 +1,23 @@
 # This file is managed by Chef any changes made will be overwritten
 
 ########### These MUST be filled in for a storm configuration
-storm.zookeeper.servers:
-<% @zoo_servers.each do |host| %>
-- "<%= host %>"
-<% end %>
-storm.zookeeper.port: 2181
-
-storm.local.dir: "<%= @stormdata %>"
-java.library.path: "<%= @java_lib_path %>"
-
-topology.debug: true
+<%= render "common.yaml.erb" %>
 
 nimbus.host: "<%= node[:storm][:nimbus][:host] %>"
 nimbus.task.launch.secs : 240
 nimbus.childopts: "<%= node[:storm][:nimbus][:childopts] %>"
-ui.childopts: "<%= node[:storm][:ui][:childopts] %>"
-worker.childopts: "<%= node[:storm][:worker][:childopts] %>"
 
+topology.debug: true
+
+nimbus.task.launch.secs : 240
 supervisor.worker.start.timeout.secs: 240
 supervisor.worker.timeout.secs: 240
+
+worker.childopts: "<%= node[:storm][:worker][:childopts] %>"
 supervisor.childopts: "<%= node[:storm][:supervisor][:childopts] %>"
 supervisor.slots.ports:
 <% node[:storm][:supervisor][:workerports].each do |port| %>
   - <%= port %>
 <% end %>
+
+ui.childopts: "<%= node[:storm][:ui][:childopts] %>"

@@ -5,14 +5,15 @@
 
 include_recipe "storm::default"
 
-template "Storm conf file" do
-  path "/home/#{node[:storm][:deploy][:user]}/apache-storm-#{node[:storm][:version]}/conf/storm.yaml"
+template "storm.yaml" do
+  path ::File.join(node[:storm][:path][:version], "conf/storm.yaml")
   source "nimbus.yaml.erb"
   owner node[:storm][:deploy][:user]
   group node[:storm][:deploy][:group]
   mode 0644
+  notifies :restart, "service[storm-drpc]"
+  notifies :restart, "service[storm-nimbus]"
 end
 
 include_recipe "storm::service_nimbus"
-
-include_recipe "storm::drpc"
+include_recipe "storm::service_drpc"

@@ -1,0 +1,7 @@
+storm.zookeeper.servers:
+<% node[:storm][:supervisor][:hosts].each do |host| %>
+- "<%= host %>"
+<% end %>
+
+storm.local.dir: "<%= node[:storm][:path][:stormdata] %>"
+java.library.path: "<%= node[:storm][:path][:java_lib] %>"

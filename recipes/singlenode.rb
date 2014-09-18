@@ -26,15 +26,24 @@ template "Storm conf file" do
 end
 
 ["nimbus", "supervisor", "drpc", "ui"].each do |service_name|
-  conf_file = "storm-#{service_name}.conf"
-  conf_path = "/etc/init/#{conf_file}"
+  init_style = node[:storm][:init_style]
+  conf_file = case init_style
+              when "upstart"
+                "storm-#{service_name}.conf"
+              when "init"
+                "storm-#{service_name}"
+              end
+  conf_path = case init_style
+              when "upstart"
+                "/etc/init/#{conf_file}"
+              when "init"
+                "/etc/init.d/#{conf_file}"
+              end
 
-  template "Upstart #{conf_file}" do
+  template conf_path do
     path conf_path
-    source "upstart/#{conf_file}.erb"
-    owner node[:storm][:deploy][:user]
-    group node[:storm][:deploy][:group]
-    mode 0644
+    source "#{init_style}/#{conf_file}.erb"
+    mode 0766
     variables(
       :user => node[:storm][:deploy][:user],
       :storm_home => storm_home,
@@ -42,12 +51,12 @@ end
       :drpc_pid => node[:storm][:path][:pid],
       :drpc_mem => node[:storm][:drpc][:mem],
     )
-    notifies :restart, "service[storm-#{service_name}]"
+    notifies :restart, "service[storm-#{service_name}]", :delayed
   end
 
   service "storm-#{service_name}" do
-    provider Chef::Provider::Service::Upstart
-    supports :status => true, :restart => true, :reload => true
+    provider Chef::Provider::Service::Upstart if init_style == "upstart"
+    supports :status => true, :restart => true
     action [ :enable, :start ]
   end
 end

@@ -1,0 +1,133 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          storm-ui
+# Required-Start:    $local_fs $network $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Starts up an instance of Storm's UI Server
+# Description:       This file should be used to start and stop storm-ui.
+### END INIT INFO
+
+# Author: Maximilian Goisser <goisser94@gmail.com>
+# Based on the haproxy script by: Arnaud Cornet <acornet@debian.org>
+
+# This file is managed by Chef any changes made will be overwritten
+
+<%= render "env/storm.erb", :variables => { :user => @user, :storm_home => @storm_home, :java_lib_path => @java_lib_path } %>
+PIDFILE=/var/run/storm-ui.pid
+
+[ -f /etc/default/rcS ] && . /etc/default/rcS
+. /lib/lsb/init-functions
+
+storm_ui_start()
+{
+  start-stop-daemon --start --user <%= @user %> --pidfile "$PIDFILE" --make-pidfile --background \
+    --exec /usr/bin/python $STORM_HOME/bin/storm ui \
+    || return 2
+  return 0
+}
+
+storm_ui_stop()
+{
+  if [ ! -f $PIDFILE ] ; then
+    # This is a success according to LSB
+    return 0
+  fi
+  for pid in $(cat $PIDFILE) ; do
+    /bin/kill $pid || return 4
+  done
+  rm -f $PIDFILE
+  return 0
+}
+
+storm_ui_status()
+{
+  if [ ! -f $PIDFILE ] ; then
+    # program not running
+    return 3
+  fi
+
+  for pid in $(cat $PIDFILE) ; do
+    if ! ps --no-headers p "$pid" | grep ui > /dev/null ; then
+      # program running, bogus pidfile
+      return 1
+    fi
+  done
+
+  return 0
+}
+
+
+case "$1" in
+start)
+  log_daemon_msg "Starting storm-ui" "storm-ui"
+  storm_ui_start
+  ret=$?
+  case "$ret" in
+  0)
+    log_end_msg 0
+    ;;
+  1)
+    log_end_msg 1
+    echo "pid file '$PIDFILE' found, storm-ui not started."
+    ;;
+  2)
+    log_end_msg 1
+    ;;
+  esac
+  exit $ret
+  ;;
+stop)
+  log_daemon_msg "Stopping storm-ui" "storm-ui"
+  storm_ui_stop
+  ret=$?
+  case "$ret" in
+  0|1)
+    log_end_msg 0
+    ;;
+  2)
+    log_end_msg 1
+    ;;
+  esac
+  exit $ret
+  ;;
+restart)
+  log_daemon_msg "Restarting storm-ui" "storm-ui"
+  storm_ui_stop
+  storm_ui_start
+  case "$?" in
+  0)
+    log_end_msg 0
+    ;;
+  1)
+    log_end_msg 1
+    ;;
+  2)
+    log_end_msg 1
+    ;;
+  esac
+  ;;
+status)
+  storm_ui_status
+  ret=$?
+  case "$ret" in
+  0)
+    echo "storm-ui is running."
+    ;;
+  1)
+    echo "storm-ui dead, but $PIDFILE exists."
+    ;;
+  *)
+    echo "storm-ui not running."
+    ;;
+  esac
+  exit $ret
+  ;;
+*)
+  echo "Usage: /etc/init.d/storm-ui {start|stop|restart|status}"
+  exit 2
+  ;;
+esac
+
+:

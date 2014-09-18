@@ -35,6 +35,9 @@ default[:storm][:path] = {
   :pid => "/var/run/storm-drpc.pid",
 }
 
+default[:storm][:init_style] = default[:init_package]
+default[:storm][:init_style] = "upstart" if default[:storm][:init_style].nil?
+
 default[:storm][:nimbus] = {
   :host => "localhost",
   :childopts => "-Xmx512m -Djava.net.preferIPv4Stack=true"

@@ -23,7 +23,7 @@ PIDFILE=/var/run/storm-supervisor.pid
 storm_supervisor_start()
 {
   rm -Rf $STORM_HOME/storm-local/supervisor/*
-  start-stop-daemon --start --user <%= @user %> --pidfile "$PIDFILE" --make-pidfile --background \
+  start-stop-daemon --start --user <%= @user %> --chuid <%= @user %> --pidfile "$PIDFILE" --make-pidfile --background \
     --exec /usr/bin/python $STORM_HOME/bin/storm supervisor \
     || return 2
   return 0

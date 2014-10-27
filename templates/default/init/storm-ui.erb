@@ -22,7 +22,7 @@ PIDFILE=/var/run/storm-ui.pid
 
 storm_ui_start()
 {
-  start-stop-daemon --start --user <%= @user %> --pidfile "$PIDFILE" --make-pidfile --background \
+  start-stop-daemon --start --user <%= @user %> --chuid <%= @user %> --pidfile "$PIDFILE" --make-pidfile --background \
     --exec /usr/bin/python $STORM_HOME/bin/storm ui \
     || return 2
   return 0

@@ -23,6 +23,8 @@ end
 
 node[:storm][:path].each do |_, dir|
   directory dir do
+    owner node[:storm][:deploy][:user]
+    group node[:storm][:deploy][:group]
     recursive true
   end
 end
@@ -41,6 +43,7 @@ remote_file local_path do
 end
 
 execute "extract_storm" do
+  user node[:storm][:deploy][:user]
   command "tar -xf #{local_path} -C #{node[:storm][:path][:root]}"
   not_if { ::File.exists?(storm_bin) }
 end

@@ -22,7 +22,7 @@ PIDFILE=/var/run/storm-drpc.pid
 
 storm_drpc_start()
 {
-  start-stop-daemon --start --user <%= @user %> --pidfile "$PIDFILE" --make-pidfile --background \
+  start-stop-daemon --start --user <%= @user %> --chuid <%= @user %> --pidfile "$PIDFILE" --make-pidfile --background \
     --exec /usr/bin/python $STORM_HOME/bin/storm drpc \
     || return 2
   return 0

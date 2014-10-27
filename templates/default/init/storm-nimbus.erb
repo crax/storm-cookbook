@@ -23,7 +23,7 @@ PIDFILE=/var/run/storm-nimbus.pid
 storm_nimbus_start()
 {
   rm -Rf $STORM_HOME/storm-local/nimbus/*
-  start-stop-daemon --start --user <%= @user %> --pidfile "$PIDFILE" --make-pidfile --background \
+  start-stop-daemon --start --user <%= @user %> --chuid <%= @user %> --pidfile "$PIDFILE" --make-pidfile --background \
     --exec /usr/bin/python $STORM_HOME/bin/storm nimbus \
     || return 2
   return 0

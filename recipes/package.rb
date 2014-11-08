@@ -6,8 +6,10 @@
 group node[:storm][:deploy][:group]
 user node[:storm][:deploy][:user] do
   gid node[:storm][:deploy][:group]
+  home File.join('/home/', node[:storm][:deploy][:user])
   comment "storm user"
   system true
+  supports manage_home: true
   shell "/bin/false"
 end
 
@@ -46,4 +48,14 @@ execute "extract_storm" do
   user node[:storm][:deploy][:user]
   command "tar -xf #{local_path} -C #{node[:storm][:path][:root]}"
   not_if { ::File.exists?(storm_bin) }
+end
+
+directory File.join('/home', node[:storm][:deploy][:user], '/.storm') do
+  owner node[:storm][:user]
+  group node[:storm][:group]
+  action :create
+end
+
+link File.join('/home/', node[:storm][:deploy][:user], '/.storm/storm.yaml') do
+  to File.join(node[:storm][:path][:version], '/conf/storm.yaml')
 end

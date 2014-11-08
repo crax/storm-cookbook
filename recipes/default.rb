@@ -4,6 +4,8 @@
 #
 
 # use install method
+include_recipe 'java::default'
+
 case node[:storm][:install_method]
   when "package"
     include_recipe "storm::package"

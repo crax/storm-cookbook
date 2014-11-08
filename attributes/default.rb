@@ -43,7 +43,6 @@ default[:storm][:nimbus] = {
   :childopts => "-Xmx512m -Djava.net.preferIPv4Stack=true"
 }
 default[:storm][:supervisor] = {
-  :hosts => %w{ localhost },
   :childopts => "-Xmx512m -Djava.net.preferIPv4Stack=true",
   :workerports => (6700..6706).to_a
 }
@@ -55,4 +54,8 @@ default[:storm][:drpc] = {
 }
 default[:storm][:ui] = {
   :childopts => "-Xmx512m -Djava.net.preferIPv4Stack=true"
+}
+
+default[:storm][:zookeeper] = {
+  :hosts => %w{ localhost }
 }

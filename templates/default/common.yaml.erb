@@ -1,5 +1,5 @@
 storm.zookeeper.servers:
-<% node[:storm][:supervisor][:hosts].each do |host| %>
+<% node[:storm][:zookeeper][:hosts].each do |host| %>
 - "<%= host %>"
 <% end %>
 

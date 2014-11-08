@@ -7,6 +7,8 @@ nimbus.host: "<%= node[:storm][:nimbus][:host] %>"
 
 worker.childopts: "<%= node[:storm][:worker][:childopts] %>"
 supervisor.childopts: "<%= node[:storm][:supervisor][:childopts] %>"
+supervisor.worker.start.timeout.secs: 240
+supervisor.worker.timeout.secs: 240
 supervisor.slots.ports:
 <% node[:storm][:supervisor][:workerports].each do |port| %>
   - <%= port %>

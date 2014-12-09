@@ -8,7 +8,7 @@ default[:storm][:deploy] = {
   :group => "storm"
 }
 
-default[:storm][:short_version] = "0.9.2-incubating"
+default[:storm][:short_version] = "0.9.3"
 default[:storm][:version] = "v#{node[:storm][:short_version]}"
 default[:storm][:long_version] = "apache-storm-#{node[:storm][:short_version]}"
 
@@ -18,7 +18,7 @@ default[:storm][:packages] = %w{ }
 
 default[:storm][:package] = {
   :packages => %w{ },
-  :url => "http://mirror.reverse.net/pub/apache/incubator/storm/apache-storm-#{node[:storm][:short_version]}",
+  :url => "http://mirror.reverse.net/pub/apache/storm/apache-storm-#{node[:storm][:short_version]}",  
   :file => "#{node[:storm][:long_version]}.tar.gz"
 }
 

@@ -1,7 +1,9 @@
 init_source = "#{node[:storm][:init_style]}/#{conf_file("supervisor")}.erb"
 init_path = conf_path("supervisor")
 
-template init_path do
+log "----> #{init_path}"
+
+template "storm-service-supervisor-script" do
   path init_path
   source init_source
   mode 0755
